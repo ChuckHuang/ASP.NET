@@ -75,44 +75,25 @@ namespace MovieStore.MVC.Controllers
             return View(movie);
         }
         [Authorize]
-        [HttpGet]
-        public async Task<IActionResult> Purchases()
-        {
-            var user = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
-            int userId = Int32.Parse(user.Value);
-            var purchasedMovieIdList = await _dbContext.Purchases.Where(p => p.UserId == userId).Select(p => p.MovieId).ToListAsync();
-            var purchasedMovies = await _dbContext.Movies.Where(m => purchasedMovieIdList.Contains(m.Id)).ToListAsync();
-            return View(purchasedMovies);
-        }
-        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Purchase([Bind("Id, Title, Price")]Movie movie)
         {
-            if (ModelState.IsValid)
+            int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
+            var purchase = new Purchase()
             {
-                //getting logged in user's ID attaching it to the Order
-                int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
-                var purchase = new Purchase()
-                {
-                    UserId = userId,
-                    MovieId = movie.Id,
-                    PurchaseNumber = Guid.NewGuid(),
-                    TotalPrice = movie.Price == null ? 0 : movie.Price.Value,
-                    PurchaseDateTime = DateTime.Now
-                };
-                _dbContext.Add(purchase);
-                await _dbContext.SaveChangesAsync();
+                UserId = userId,
+                MovieId = movie.Id,
+                PurchaseNumber = Guid.NewGuid(),
+                TotalPrice = movie.Price == null ? 0 : movie.Price.Value,
+                PurchaseDateTime = DateTime.Now
+            };
+            _dbContext.Add(purchase);
+            await _dbContext.SaveChangesAsync();
 
-                TempData["message"] = $"Purhase of {movie.Title} completed successfully.";
-                return RedirectToAction("Details", "Movies", new { movieId = movie.Id });
-
-            }
-            else
-            {
-                return View();
-
-            }
+            TempData["message"] = $"Purhase of {movie.Title} completed successfully.";
+            return RedirectToAction("Details", "Movies", new { movieId = movie.Id });
         }
+       
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> Favorite([Bind("Id, Title")]Movie movie)

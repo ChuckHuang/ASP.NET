@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MovieStore.Core.Entities;
 using MovieStore.Infrastructure.Data;
 
 namespace MovieStore.MVC.Controllers
@@ -35,10 +38,17 @@ namespace MovieStore.MVC.Controllers
             _dbContext = dbContext;
 
         }
-        public IActionResult Index()
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Purchases()
         {
-            return View();
+            var user = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+            int userId = Int32.Parse(user.Value);
+            var purchasedMovies = await _dbContext.Purchases.Include(p => p.Movie).Where(p => p.UserId == userId).Select(p => p.Movie).ToListAsync();
+            return View(purchasedMovies);
         }
+
         [HttpGet]        
         [Route("/User/movie/{movieId}/favorite")]
         public JsonResult Favorite([FromRoute] int movieId)
