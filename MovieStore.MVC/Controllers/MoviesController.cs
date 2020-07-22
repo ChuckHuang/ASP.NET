@@ -155,5 +155,47 @@ namespace MovieStore.MVC.Controllers
             //information that need to be created
             return View();
         }
+
+        [HttpGet]
+        public ActionResult Review(int id)
+        {
+            var review = new Review()
+            {
+                MovieId = id
+            };
+
+
+            return PartialView("~/Views/Shared/_Review.cshtml", review);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Review([Bind("MovieId, ReviewText, Rating")]Review review)
+        {
+            if (ModelState.IsValid)
+            {
+                //getting logged in user's ID attaching it to the Order
+                int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
+                review.UserId = userId;
+                var existingReview = _dbContext.Reviews.FirstOrDefault(r => r.MovieId == review.MovieId && r.UserId == review.UserId);
+                if (existingReview == null)
+                {
+                    _dbContext.Add(review);
+                }
+                else
+                {
+                    existingReview.ReviewText = review.ReviewText;
+                    existingReview.Rating = review.Rating;
+                }
+                await _dbContext.SaveChangesAsync();
+
+                TempData["message"] = $"Review completed successfully.";
+                return RedirectToAction("Details", "Movies", new { movieId = review.MovieId });
+
+            }
+            else
+            {
+                return View();
+
+            }
+        }
     }
 }
