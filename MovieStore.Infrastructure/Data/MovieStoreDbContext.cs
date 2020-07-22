@@ -54,6 +54,9 @@ namespace MovieStore.Infrastructure.Data
         public DbSet<Favorite> Favorites { get; set; }
 
         public DbSet<Review> Reviews { get; set; }
+
+        public DbSet<Purchase> Purchases { get; set; }
+
         //regular lists, Dicti..all collection implement IEnumerable,
         //so linq methods will point to IEnumerable extension methods
         //Dbsets, since they implement IQuerable they point to IQuerable methods.

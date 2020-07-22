@@ -47,50 +47,11 @@ namespace MovieStore.Infrastructure.Services
         {
             throw new NotImplementedException();
         }
-        
-    }
-    public class MovieServiceTest : IMovieService
-    {
-        public IEnumerable<Movie> GetTop25HighestRevenueMovies()
-        {
-            var movies = new List<Movie>()
-                        {
-                            new Movie {Id = 1, Title = "Avengers: Infinity War", Budget = 1200000},
-                            new Movie {Id = 2, Title = "Avatar", Budget = 1200000},
-                            new Movie {Id = 3, Title = "Star Wars: The Force Awakens", Budget = 1200000},
-                            new Movie {Id = 4, Title = "Titanic", Budget = 1200000},
-                        };
-            return  movies;
-        }
 
-        Task<Movie> IMovieService.CreateMovie(Movie movie)
+        public async Task<bool> IsBought(int userId, int movieId)
         {
-            throw new NotImplementedException();
-        }
-
-        Task<Movie> IMovieService.GetMovieById(int Id)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<int> IMovieService.GetMovieCount(string title)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<IEnumerable<Movie>> IMovieService.GetTop25HiestRevenueMovies()
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<IEnumerable<Movie>> IMovieService.GetTop25RatedMovies()
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<Movie> IMovieService.UpdateMovie(Movie movie)
-        {
-            throw new NotImplementedException();
+            return await _movieRepository.IsBought(userId, movieId);
         }
     }
+  
 }

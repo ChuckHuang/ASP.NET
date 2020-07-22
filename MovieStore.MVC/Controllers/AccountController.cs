@@ -69,7 +69,7 @@ namespace MovieStore.MVC.Controllers
                     new Claim(ClaimTypes.Surname, user.LastName),
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(ClaimTypes.Name, user.Email),
-                };
+            };
                 //we need to create an Identity Object to hold those claims
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 //finally we are going to create a cookie that will be attached to the Http Response

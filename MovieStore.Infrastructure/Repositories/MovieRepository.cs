@@ -58,6 +58,10 @@ namespace MovieStore.Infrastructure.Repositories
             return movies;
         }
 
-
+        public async Task<bool> IsBought(int userId, int movieId)
+        {
+            var isBought = await _dbContext.Purchases.AnyAsync(p => p.UserId == userId && p.MovieId == movieId);
+            return isBought;
+        }
     }
 }

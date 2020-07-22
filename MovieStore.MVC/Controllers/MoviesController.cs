@@ -5,10 +5,14 @@ using MovieStore.Core.ServiceInterfaces;
 using MovieStore.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using MovieStore.Core.RepositoryInterfaces;
+using MovieStore.Core.Entities;
+using System;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MovieStore.MVC.Controllers
 {
-  
+
     public class MoviesController : Controller
     {
         //interview question
@@ -30,7 +34,7 @@ namespace MovieStore.MVC.Controllers
 
             //call our Movie Service method, highest grossing method
             var movies = await _movieService.GetTop25HiestRevenueMovies();
-            
+
             //var movies = new List<Movie>
             //{
             //    new Movie {Id = 1, Title = "Avengers: Infinity War", Budget = 1200000},
@@ -58,8 +62,45 @@ namespace MovieStore.MVC.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int movieId)
         {
-            var movie =await  _movieService.GetMovieById(movieId);
+            var movie = await _movieService.GetMovieById(movieId);
+
+            var user = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+            if (user != null)
+            {
+                int userId = Int32.Parse(user.Value);
+                ViewBag.AlreadyBought = await _movieService.IsBought(userId, movieId);
+            }
+
             return View(movie);
+        }
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Purchase([Bind("Id, Title, Price")]Movie movie)
+        {
+            if (ModelState.IsValid)
+            {
+                //getting logged in user's ID attaching it to the Order
+                int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
+                var purchase = new Purchase()
+                {
+                    UserId = userId,
+                    MovieId = movie.Id,
+                    PurchaseNumber = Guid.NewGuid(),
+                    TotalPrice = movie.Price == null ? 0 : movie.Price.Value,
+                    PurchaseDateTime = DateTime.Now
+                };
+                _dbContext.Add(purchase);
+                await _dbContext.SaveChangesAsync();
+
+                TempData["message"] = $"Purhase of {movie.Title} completed successfully.";
+                return RedirectToAction("Details", "Movies", new { movieId = movie.Id });
+
+            }
+            else
+            {
+                return View();
+
+            }
         }
         [HttpGet]
         public async Task<IActionResult> ByGenre(int genreId)
@@ -74,13 +115,14 @@ namespace MovieStore.MVC.Controllers
             if (genre != null)
             {
                 ViewData["Title"] = genre.Name;
-            } else
+            }
+            else
             {
                 ViewData["Title"] = "N/A";
             }
             return View(movies);
         }
-       
+
         [HttpPost]
         public IActionResult Create(string title, decimal budget, string TITLE, string tite)
         {
@@ -94,6 +136,7 @@ namespace MovieStore.MVC.Controllers
             //we need to get the data from view and save it in database
             return View();
         }
+
         [HttpGet]
         public IActionResult Create()
         {

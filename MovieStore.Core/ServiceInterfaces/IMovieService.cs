@@ -18,5 +18,6 @@ namespace MovieStore.Core.ServiceInterfaces
         Task<Movie> UpdateMovie(Movie movie);
 
         Task<int> GetMovieCount(string title = "");
+        Task<bool> IsBought(int userId, int movieId);
     }
 }

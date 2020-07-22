@@ -38,6 +38,11 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            @if (TempData["message"] != null)
+            {
+                <div class="alert alert-success">@TempData["message"]</div>
+            }
+
             @RenderBody() @*look for specific pages *@
         </main>
     </div>

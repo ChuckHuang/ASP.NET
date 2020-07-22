@@ -1,28 +1,48 @@
 ﻿@model MovieStore.Core.Entities.Movie
 @using System.Globalization;
-    <div class="row text-light bg-dark">
-        <div class="col-4">
-            <img src="@Model.PosterUrl" alt="@Model.Title" height="250" />
+<div class="row text-light bg-dark">
+    <div class="col-4">
+        <img src="@Model.PosterUrl" alt="@Model.Title" height="250" />
+    </div>
+    <div class="col-6">
+        <h1>@Model.Title</h1>
+        <div><small>@Model.Tagline</small></div>
+        <div><label>@Model.RunTime m | @Model.ReleaseDate?.ToString("yyyy")</label></div>
+        <div>
+            @foreach (var item in Model.MovieGenres)
+            {
+                <span class="badge badge-secondary">@item.Genre.Name</span>
+            }
         </div>
-        <div class="col-6">
-            <h1>@Model.Title</h1>
-            <div><small>@Model.Tagline</small></div>
-            <div><label>@Model.RunTime m | @Model.ReleaseDate?.ToString("yyyy")</label></div>
-            <div>
-                @foreach (var item in Model.MovieGenres)
-                {
-                    <span class="badge badge-secondary">@item.Genre.Name</span>
-                }
+        <div><span class="badge badge-warning">@Model.Reviews.Average(r => r.Rating).ToString("F")</span></div>
+        <p><small>@Model.Overview</small></p>
+    </div>
+    <div class="col-2">
+        <div><span class="badge badge-secondary">Trailer</span></div>
+        <div><span class="badge badge-secondary">Review</span></div>
+        <div>
+
+            @if (ViewBag.AlreadyBought)
+            {
+                <span class="badge badge-secondary">
+                    Watch
+                </span>
+            }
+            else
+            {
+        <form asp-action="Purchase" method="post">
+            <input asp-for="Id" type="hidden" value="@Model.Id" />
+            <input asp-for="Title" type="hidden" value="@Model.Title" />
+            <input asp-for="Price" type="hidden" value="@Model.Price" />
+            <div class="form-group">
+                <input type="submit" value="Buy" class="btn btn-primary" />
             </div>
-            <div><span class="badge badge-warning">@Model.Reviews.Average(r => r.Rating).ToString("F")</span></div>
-            <p><small>@Model.Overview</small></p>
-        </div>
-        <div class="col-2">
-            <div><span class="badge badge-secondary">Trailer</span></div>
-            <div><span class="badge badge-secondary">Review</span></div>
-            <div><span class="badge badge-secondary">Buy</span></div>
+        </form>
+            }
+
         </div>
     </div>
+</div>
 <div class="row">
     <div class="col-sm-12 col-md-5">
         <h3>Movie Facts</h3>
