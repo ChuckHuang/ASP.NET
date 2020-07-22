@@ -74,6 +74,16 @@ namespace MovieStore.MVC.Controllers
             return View(movie);
         }
         [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Purchases()
+        {
+            var user = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+            int userId = Int32.Parse(user.Value);
+            var purchasedMovieIdList = await _dbContext.Purchases.Where(p => p.UserId == userId).Select(p => p.MovieId).ToListAsync();
+            var purchasedMovies = await _dbContext.Movies.Where(m => purchasedMovieIdList.Contains(m.Id)).ToListAsync();
+            return View(purchasedMovies);
+        }
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Purchase([Bind("Id, Title, Price")]Movie movie)
         {

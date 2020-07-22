@@ -21,13 +21,19 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Top Movies</a>
                         </li>
+                        @if (Context.User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Movies" asp-action="Purchases">Purchases</a>
+                            </li>
+                        }
                         <li class="nav-item dropdown">
                             <a class="nav-link text-dark dropdown-toggle" href="#" id="dropdownMenuButton" data-toggle="dropdown">Genres</a>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            @await Component.InvokeAsync("Genres") 
+                                @await Component.InvokeAsync("Genres")
                             </div>
                         </li>
-                        <partial name="_LoginResult"/>
+                        <partial name="_LoginResult" />
                     </ul>
                     @*
                         the same menu on every page
