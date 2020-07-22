@@ -1,0 +1,24 @@
+﻿@model IEnumerable<MovieStore.Core.Entities.Review>
+
+    <table class="table">
+        <tr>
+            <td>
+                Title
+            </td>
+            <td>
+                Rating
+            </td>
+            <td>
+                Comment
+            </td>
+        </tr>
+
+        @foreach (var review in Model)
+        {
+            <tr>
+                <td>@review.Movie.Title</td>
+                <td>@review.Rating</td>
+                <td>@review.ReviewText</td>
+            </tr>
+        }
+    </table>

@@ -197,5 +197,15 @@ namespace MovieStore.MVC.Controllers
 
             }
         }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Reviews()
+        {
+            var user = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+            int userId = Int32.Parse(user.Value);
+            var reviews = await _dbContext.Reviews.Where(p => p.UserId == userId).Include(r => r.Movie).ToListAsync();
+            return View(reviews);
+        }
     }
 }
