@@ -19,5 +19,6 @@ namespace MovieStore.Core.ServiceInterfaces
 
         Task<int> GetMovieCount(string title = "");
         Task<bool> IsBought(int userId, int movieId);
+        Task<bool> IsFavorite(int userId, int movieId);
     }
 }

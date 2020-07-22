@@ -63,5 +63,11 @@ namespace MovieStore.Infrastructure.Repositories
             var isBought = await _dbContext.Purchases.AnyAsync(p => p.UserId == userId && p.MovieId == movieId);
             return isBought;
         }
+
+        public async Task<bool> IsFavorite(int userId, int movieId)
+        {
+            var isFavorite = await _dbContext.Favorites.AnyAsync(p => p.UserId == userId && p.MovieId == movieId);
+            return isFavorite;
+        }
     }
 }

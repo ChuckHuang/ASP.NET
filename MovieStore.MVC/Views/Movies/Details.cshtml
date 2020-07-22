@@ -45,71 +45,96 @@
                     </form>
                 }
             </div>
-        }
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-12 col-md-5">
-            <h3>Movie Facts</h3>
-            <div class="border-bottom">Release Date <span class="badge badge-secondary">@Model.ReleaseDate?.ToString("MMM dd, yyyy")</span></div>
-            <div class="border-bottom">Run Time <span class="badge badge-secondary">@Model.RunTime</span></div>
-            <div class="border-bottom">Box Office <span class="badge badge-secondary">@Model.Revenue?.ToString("C3", CultureInfo.CurrentCulture)</span></div>
-            <div class="border-bottom">Budget <span class="badge badge-secondary">@Model.Budget?.ToString("C3", CultureInfo.CurrentCulture)</span></div>
-        </div>
-        <div class="col-sm-12 col-md-7">
-            <h3>Cast</h3>
-            <div class="row">
-                <div class="col-sm-4">
-                    Profile
-                </div>
-                <div class="col-sm-4">
-                    Actor
-                </div>
-                <div class="col-sm-4">
-                    Character
-                </div>
+            <div>
+
+
+                @if (ViewBag.IsFavorite)
+                {
+                    <form asp-action="Unfavorite" method="post">
+                        <input asp-for="Id" type="hidden" value="@Model.Id" />
+                        <input asp-for="Title" type="hidden" value="@Model.Title" />
+                        <button type="submit" style="color: yellow;" class="btn"><i class="far fa-star"></i></button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-action="Favorite" method="post">
+                        <input asp-for="Id" type="hidden" value="@Model.Id" />
+                        <input asp-for="Title" type="hidden" value="@Model.Title" />
+                        <button type="submit" style="color: gray;" class="btn"><i class="far fa-star"></i></button>
+                    </form>
+
+                }
+
+
+
             </div>
-            @foreach (var item in Model.MovieCasts)
-            {
-                <a href="@item.Cast.TmdbUrl">
-                    <div class="row">
-                        <div class="col-sm-4">
-                            @if (string.IsNullOrEmpty(item.Cast.ProfilePath))
-                            {
-                                <span>@item.Cast.Name</span>
-                            }
-                            else
-                            {
-                                <img height="75" src="@item.Cast.ProfilePath" alt="@item.Cast.Name" />
-                            }
 
-                        </div>
-                        <div class="col-sm-4">
+        }
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12 col-md-5">
+        <h3>Movie Facts</h3>
+        <div class="border-bottom">Release Date <span class="badge badge-secondary">@Model.ReleaseDate?.ToString("MMM dd, yyyy")</span></div>
+        <div class="border-bottom">Run Time <span class="badge badge-secondary">@Model.RunTime</span></div>
+        <div class="border-bottom">Box Office <span class="badge badge-secondary">@Model.Revenue?.ToString("C3", CultureInfo.CurrentCulture)</span></div>
+        <div class="border-bottom">Budget <span class="badge badge-secondary">@Model.Budget?.ToString("C3", CultureInfo.CurrentCulture)</span></div>
+    </div>
+    <div class="col-sm-12 col-md-7">
+        <h3>Cast</h3>
+        <div class="row">
+            <div class="col-sm-4">
+                Profile
+            </div>
+            <div class="col-sm-4">
+                Actor
+            </div>
+            <div class="col-sm-4">
+                Character
+            </div>
+        </div>
+        @foreach (var item in Model.MovieCasts)
+        {
+            <a href="@item.Cast.TmdbUrl">
+                <div class="row">
+                    <div class="col-sm-4">
+                        @if (string.IsNullOrEmpty(item.Cast.ProfilePath))
+                        {
                             <span>@item.Cast.Name</span>
-                        </div>
-                        <div class="col-sm-4">
-                            <span>@item.Character</span>
-                        </div>
+                        }
+                        else
+                        {
+                            <img height="75" src="@item.Cast.ProfilePath" alt="@item.Cast.Name" />
+                        }
+
                     </div>
-                </a>
-            }
-        </div>
+                    <div class="col-sm-4">
+                        <span>@item.Cast.Name</span>
+                    </div>
+                    <div class="col-sm-4">
+                        <span>@item.Character</span>
+                    </div>
+                </div>
+            </a>
+        }
     </div>
-    <div class="popup-overlay">
-        <!--Creates the popup content-->
-        <div class="popup-content">
-            <div id="popupcontentcontainer"></div>
-        </div>
+</div>
+<div class="popup-overlay">
+    <!--Creates the popup content-->
+    <div class="popup-content">
+        <div id="popupcontentcontainer"></div>
     </div>
+</div>
 
 
-    <script type="text/javascript">
-        $(function () {
-            $('body').on('click', '.modal-link', function (e) {
-                $.get($(this).data("targeturl"), function (data) {
-                    $('#popupcontentcontainer').html(data);
-                });
-                $(".popup-content").addClass("active");
+<script type="text/javascript">
+    $(function () {
+        $('body').on('click', '.modal-link', function (e) {
+            $.get($(this).data("targeturl"), function (data) {
+                $('#popupcontentcontainer').html(data);
             });
+            $(".popup-content").addClass("active");
         });
-    </script>
+    });
+</script>

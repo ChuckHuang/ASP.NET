@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using MovieStore.Infrastructure.Data;
 
 namespace MovieStore.MVC.Controllers
 {
@@ -22,14 +24,29 @@ namespace MovieStore.MVC.Controllers
     //5.add a favorite movie for logged in user
     //http:localhost:fdaa/User/Favotite--httpPost
     //6.Check if a particular Movie has been added as Favorite by looged in user
-    //http:localhost:12112/User/(123)/movie/movieId/favorite HttpGet
+    //http:localhost:12112/User/movie/movieId/favorite HttpGet
     //7. Remove favorite
     //http:localhost/12112/User/Favorite --Httpdelete
     public class UserController : Controller
     {
+        private readonly MovieStoreDbContext _dbContext;
+        public UserController(MovieStoreDbContext dbContext)
+        {
+            _dbContext = dbContext;
+
+        }
         public IActionResult Index()
         {
             return View();
+        }
+        [HttpGet]        
+        [Route("/User/movie/{movieId}/favorite")]
+        public JsonResult Favorite([FromRoute] int movieId)
+        {
+            int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
+
+            var isFavorite = _dbContext.Favorites.Any(f => f.MovieId == movieId && f.UserId == userId);
+            return Json(isFavorite);
         }
     }
 }

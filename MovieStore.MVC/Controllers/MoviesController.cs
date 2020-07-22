@@ -69,6 +69,7 @@ namespace MovieStore.MVC.Controllers
             {
                 int userId = Int32.Parse(user.Value);
                 ViewBag.AlreadyBought = await _movieService.IsBought(userId, movieId);
+                ViewBag.IsFavorite = await _movieService.IsFavorite(userId, movieId);
             }
 
             return View(movie);
@@ -105,6 +106,54 @@ namespace MovieStore.MVC.Controllers
                 TempData["message"] = $"Purhase of {movie.Title} completed successfully.";
                 return RedirectToAction("Details", "Movies", new { movieId = movie.Id });
 
+            }
+            else
+            {
+                return View();
+
+            }
+        }
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Favorite([Bind("Id, Title")]Movie movie)
+        {
+            if (ModelState.IsValid)
+            {
+                //getting logged in user's ID attaching it to the Order
+                int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
+                var favorite = new Favorite()
+                {
+                    UserId = userId,
+                    MovieId = movie.Id,                 
+                };
+                _dbContext.Add(favorite);
+                await _dbContext.SaveChangesAsync();
+
+                TempData["message"] = $"{movie.Title} has been added to favorites successfully.";
+                return RedirectToAction("Details", "Movies", new { movieId = movie.Id });
+
+            }
+            else
+            {
+                return View();
+
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Unfavorite([Bind("Id, Title")]Movie movie)
+        {
+            if (ModelState.IsValid)
+            {
+                //getting logged in user's ID attaching it to the Order
+                int userId = Int32.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value);
+                var favorite = _dbContext.Favorites.FirstOrDefault(f => f.MovieId == movie.Id && f.UserId == userId);
+                _dbContext.Remove(favorite);
+                await _dbContext.SaveChangesAsync();
+
+                TempData["message"] = $"{movie.Title} has been removed from favorites successfully.";
+                return RedirectToAction("Details", "Movies", new { movieId = movie.Id });
             }
             else
             {

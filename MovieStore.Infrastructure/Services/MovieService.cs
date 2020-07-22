@@ -52,6 +52,11 @@ namespace MovieStore.Infrastructure.Services
         {
             return await _movieRepository.IsBought(userId, movieId);
         }
+
+        public async Task<bool> IsFavorite(int userId, int movieId)
+        {
+            return await _movieRepository.IsFavorite(userId, movieId);
+        }
     }
   
 }
