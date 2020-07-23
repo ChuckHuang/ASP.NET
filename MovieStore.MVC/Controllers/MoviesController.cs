@@ -34,29 +34,6 @@ namespace MovieStore.MVC.Controllers
 
             //call our Movie Service method, highest grossing method
             var movies = await _movieService.GetTop25HiestRevenueMovies();
-
-            //var movies = new List<Movie>
-            //{
-            //    new Movie {Id = 1, Title = "Avengers: Infinity War", Budget = 1200000},
-            //    new Movie {Id = 2, Title = "Avatar", Budget = 1200000},
-            //    new Movie {Id = 3, Title = "Star Wars: The Force Awakens", Budget = 1200000},
-            //    new Movie {Id = 4, Title = "Titanic", Budget = 1200000},
-            //    new Movie {Id = 5, Title = "Inception", Budget = 1200000},
-            //    new Movie {Id = 6, Title = "Avengers: Age of Ultron", Budget = 1200000},
-            //    new Movie {Id = 7, Title = "Interstellar", Budget = 1200000},
-            //    new Movie {Id = 8, Title = "Fight Club", Budget = 1200000},
-            //};
-            //ViewBag.MoviesCount = movies.Count;
-            //ViewData["myname"] = "John Doe";
-            //using data strongly type to send data from controller to view
-            //compile time check vs run time check;
-            //go to the databse and get some list of movies and give it to the view
-            //we need to pass data from controller action method to the view
-            //usually its preferred to send a strongly typed model or object
-            //3 ways to send data from controller to view:
-            //1.strongly typed models(preferred way)
-            //2.ViewBag-dynamic
-            //3.ViewData-key/value
             return View(movies);
         }
         [HttpGet]
@@ -71,7 +48,14 @@ namespace MovieStore.MVC.Controllers
                 ViewBag.AlreadyBought = await _movieService.IsBought(userId, movieId);
                 ViewBag.IsFavorite = await _movieService.IsFavorite(userId, movieId);
             }
-
+            if (!movie.Reviews.Any())
+            {
+                var review = new Review()
+                {
+                    MovieId = movieId
+                };
+                movie.Reviews.Add(review);
+            }
             return View(movie);
         }
         [Authorize]
